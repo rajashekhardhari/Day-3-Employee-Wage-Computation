@@ -14,7 +14,7 @@ public class EmployeeWage {
 	static int monthlyHour = 0;
 	static int days = 0;
 
-	static void ComputeEmployeeWage() {
+	static void ComputeEmployeeWage(String companyName, int empRatePerHour ,int  numOfWorkingDays , int maxHoursPerMonth) {
 		{
 			while (monthlyHour <= 100 || days <= 20) {
 
@@ -45,12 +45,16 @@ public class EmployeeWage {
 						"Day: " + days + " :MonthlyHours: " + monthlyHour + ": Monthly Salary: " + monthlySalary);
 			}
 		}
+		 int totalEmpWage =monthlyHour * empRatePerHour;
+	        System.out.println("Total Emp Wage for company: " + companyName+" is:" + totalEmpWage);
+	        return;
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Welcome to Employee Wage Computation Program");
 
-		ComputeEmployeeWage();
+		ComputeEmployeeWage("Wipro",10,10,100);
+		ComputeEmployeeWage("Infosys",20,20,200);
 
 	}
 }
