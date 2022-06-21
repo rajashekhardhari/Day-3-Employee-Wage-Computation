@@ -13,10 +13,18 @@ public class EmployeeWage {
 	static int monthlySalary = 0;
 	static int monthlyHour = 0;
 	static int days = 0;
+	static String companyName;
 
-	static void ComputeEmployeeWage(String companyName, int empRatePerHour ,int  numOfWorkingDays , int maxHoursPerMonth) {
+	public EmployeeWage(String companyName, int wagePerHour, int days, int monthlyHour) {
+		this.companyName = companyName;
+		this.wagePerHour = wagePerHour;
+		this.days = days;
+		this.monthlyHour = monthlyHour;
+	}
+
+	static void ComputeEmployeeWage() {
 		{
-			while (monthlyHour <= 100 || days <= 20) {
+			while (monthlyHour <= 100 && days != 20) {
 
 				days++;
 
@@ -45,16 +53,30 @@ public class EmployeeWage {
 						"Day: " + days + " :MonthlyHours: " + monthlyHour + ": Monthly Salary: " + monthlySalary);
 			}
 		}
-		 int totalEmpWage =monthlyHour * empRatePerHour;
-	        System.out.println("Total Emp Wage for company: " + companyName+" is:" + totalEmpWage);
-	        return;
+
+		int totalEmpWage = monthlyHour * wagePerHour;
+
+		System.out.println("Total Emp Wage for company: " + companyName + " is:" + totalEmpWage);
+
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Welcome to Employee Wage Computation Program");
 
-		ComputeEmployeeWage("Wipro",10,10,100);
-		ComputeEmployeeWage("Infosys",20,20,200);
+		EmployeeWage Wipro = new EmployeeWage("Wipro", 20, 20, 100);
+
+		Wipro.ComputeEmployeeWage();
+		//System.out.println(Wipro);
+
+		EmployeeWage Infosys = new EmployeeWage("Infosys", 10, 10, 100);
+
+		Infosys.ComputeEmployeeWage();
+		//System.out.println(Infosys);
+
+		EmployeeWage Dell = new EmployeeWage("Dell", 20, 30, 100);
+
+		Dell.ComputeEmployeeWage();
+		//System.out.println(Infosys);
 
 	}
 }
