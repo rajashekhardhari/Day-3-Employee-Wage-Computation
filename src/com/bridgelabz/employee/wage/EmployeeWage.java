@@ -2,77 +2,124 @@ package com.bridgelabz.employee.wage;
 
 import java.util.Random;
 
-public class EmployeeWage {
-	public static final int partTime = 1;
-	public static final int fullTime = 2;
+interface IEmployeeWageComputation
+{
+    public void addCompany(String companyName, int wagePerHr, int maxWorkingDays, int maxWorkingHrs);
 
-	public class CompanyEmpWage {
-		public final String company;
-		public final int empRatePerHour;
-		public final int numOfWorkingDays;
-		public final int maxHoursPerMonth;
+    public void calculateTotalWage();
+}
 
-		public CompanyEmpWage(String company, int empRatePerHour, int numOfWorkingDays, int maxHoursPerMonth) {
-			this.company = company;
-			this.empRatePerHour = empRatePerHour;
-			this.numOfWorkingDays = numOfWorkingDays;
-			this.maxHoursPerMonth = maxHoursPerMonth;
-		}
+class CompanyEmpWage
+{
+    // instance constants
+    final String companyName;
+    final int wagePerHr;
+    final int maxWorkingDays;
+    final int maxWorkingHrs;
+    // instance variable
+    int totalEmpWage=0;
+	
 
-	}
+    CompanyEmpWage(String companyName, int wagePerHr, int maxWorkingDays, int maxWorkingHrs)
+    {
+    	this.companyName  = companyName;
+        this.wagePerHr = wagePerHr;
+        this.maxWorkingDays = maxWorkingDays;
+        this.maxWorkingHrs = maxWorkingHrs;
+        
+    }
 
-	private int numOfCompany = 0;
-	private CompanyEmpWage[] companyEmpWageArray;
+    void setTotalEmployeeWage(int totalEmpWage)
+    {
+        this.totalEmpWage = totalEmpWage;
+    }
 
-	public EmployeeWage() {
-		companyEmpWageArray = new CompanyEmpWage[5];
-	}
+    @Override
+    public String toString()
+    {
+        System.out.println("Details of " + companyName + " employee");
+        System.out.println("-----------------------------------------------------");
+        System.err.println("Wage per hour:" + wagePerHr);
+        System.out.println("Maximum working days:" + maxWorkingDays);
+        System.out.println("Maximum working hours:" + maxWorkingHrs);
+        return "Total wage for a month of " + companyName + " employee is " + totalEmpWage + "\n";
+    }
+}
 
-	private void computeEmpWage() {
-		for (int i = 0; i < numOfCompany; i++) {
-			int totalEmpWage = calculateEmpHrs(companyEmpWageArray[i]);
-			System.out
-					.println("Total Emp Wage for Company " + companyEmpWageArray[i].company + " is : " + totalEmpWage);
-		}
-	}
+public class EmployeeWage implements IEmployeeWageComputation
+{
+    // class constants
+    public static final int partTime = 1;
+    public static final int fullTime = 2;
+    // instance variables
+    int noOfCompanies, index;
+    CompanyEmpWage[] companies;
 
-	private void addCompanyEmpWage(String company, int empRatePerHour, int numOfWorkingDays, int maxHoursPerMonth) {
-		companyEmpWageArray[numOfCompany] = new CompanyEmpWage(company, empRatePerHour, numOfWorkingDays,
-				maxHoursPerMonth);
-		numOfCompany++;
-	}
+    public EmployeeWage (int noOfCompanies)
+    {
+        this.noOfCompanies = noOfCompanies;
+        companies = new CompanyEmpWage[noOfCompanies];
+        index = 0;
+    }
 
-	private int calculateEmpHrs(CompanyEmpWage companyEmpWage) {
-		// Variables
-		int empHrs = 0;
-		int totalEmpHrs = 0;
-		int totalWorkingDays = 0;
-		// Computation
-		while (totalEmpHrs <= companyEmpWage.maxHoursPerMonth && totalWorkingDays < companyEmpWage.numOfWorkingDays) {
-			totalWorkingDays++;
-			int empCheck = (int) Math.floor(Math.random() * 10) % 3;
-			switch (empCheck) {
-			case fullTime:
-				empHrs = 8;
-				break;
-			case partTime:
-				empHrs = 4;
-				break;
-			default:
-				empHrs = 0;
-			}
+    public void addCompany(String companyName, int wagePerHr, int maxWorkingDays, int maxWorkingHrs)
+    {
+        companies[index++] = new CompanyEmpWage(companyName, wagePerHr, maxWorkingDays, maxWorkingHrs);
+    }
 
-			totalEmpHrs += empHrs;
-			System.out.println("Day : " + totalWorkingDays + " Emp Hrs : " + empHrs);
-		}
-		return totalEmpHrs * companyEmpWage.empRatePerHour;
-	}
+    int generateEmployeeType()
+    {
+        return (int) (Math.random() * 100) % 3;
+    }
 
-	public static void main(String args[]) {
-		EmployeeWage employeeWageBuilder = new EmployeeWage();
-		employeeWageBuilder.addCompanyEmpWage("D-Mart", 20, 20, 100);
-		employeeWageBuilder.addCompanyEmpWage("Amazon", 10, 10, 100);
-		employeeWageBuilder.computeEmpWage();
-	}
+    int getWorkingHrs(int empType)
+    {
+        switch (empType)
+        {
+            case fullTime:
+                return 8;
+            case partTime:
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
+    public void calculateTotalWage()
+    {
+        for (CompanyEmpWage company : companies)
+        {
+            int totalWage = calculateTotalWage(company);
+            company.setTotalEmployeeWage(totalWage);
+            System.out.println(company);
+        }
+    }
+
+    int calculateTotalWage(CompanyEmpWage companyEmpWage)
+    {
+        System.out.println("Computation of total wage of " + companyEmpWage.companyName + " employee");
+        System.out.println("-----------------------------------------------------");
+        System.out.printf("%5s     %5s     %5s     %5s\n", "Day", "Workinghrs", "Wage", "Total working hrs");
+
+        int workingHrs, totalWage = 0;
+        for (int day = 1, totalWorkingHrs = 0; day <= companyEmpWage.maxWorkingDays
+                && totalWorkingHrs <= companyEmpWage.maxWorkingHrs; day++, totalWorkingHrs += workingHrs)
+        {
+            int empType = generateEmployeeType();
+            workingHrs = getWorkingHrs(empType);
+            int wage = workingHrs * companyEmpWage.wagePerHr;
+            totalWage += wage;
+            System.out.printf("%5d       %5d      %5d      %5d\n", day, workingHrs, wage, totalWorkingHrs + workingHrs);
+        }
+        return totalWage;
+    }
+
+    public static void main(String args[])
+    {
+        EmployeeWage manageWageMultipleCompanies = new EmployeeWage (3);
+        manageWageMultipleCompanies.addCompany("D-Mart", 20, 20, 100);
+        manageWageMultipleCompanies.addCompany("Amazon", 10, 10, 100);
+        manageWageMultipleCompanies.calculateTotalWage();
+    }
 
 }
