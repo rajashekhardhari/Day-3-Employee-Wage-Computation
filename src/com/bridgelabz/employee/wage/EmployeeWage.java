@@ -4,93 +4,107 @@ import java.util.Random;
 
 import java.util.ArrayList;
 
-public class EmployeeWage {
-	public interface IfComputeEmpWage {
+import java.util.ArrayList;
+import java.util.Random;
 
-		public void addEmployeeWage(String company, int empRatePerHour, int numOfWorkingDays, int maxHourPerMonth);
+public class EmployeeWage implements InterfaceEmployeeWage {
 
-		public void computeCompanyWage();
+	static final int EMP_FULL_TIME = 1;
+	static final int EMP_PART_TIME = 2;
+
+	private ArrayList<CompanyEmployeeWage> companyEmployeeWageArrayList;
+
+	public EmployeeWage() {
+		
+		companyEmployeeWageArrayList = new ArrayList<CompanyEmployeeWage>();
 	}
 
-	public static class CompWage {
-		public String company;
-		public int empRatePerHour;
-		public int numWorkingDays;
-		public int maxHourPerMonth;
-		public int totalWage;
+	public void addCompanyEmpWage(String company, int wagePerHour, int workingDay, int totalWorkHrs) {
 
-		public CompWage(String company, int empRatePerHour, int numWorkingDays, int maxHourPerMonth) {
-			this.company = company;
-			this.empRatePerHour = empRatePerHour;
-			this.numWorkingDays = numWorkingDays;
-			this.maxHourPerMonth = maxHourPerMonth;
-		}
+		CompanyEmployeeWage companyEmployeeWage = new CompanyEmployeeWage(company, wagePerHour, workingDay,
+				totalWorkHrs);
+		companyEmployeeWageArrayList.add(companyEmployeeWage);
+	}
 
-		public void setTotalWage(int totalwage) {
-			this.totalWage = totalwage;
-		}
-
-		public String toString() {
-			return "Total emp wage for company: " + company + " is " + totalWage;
+	public void calculateEmpWage() {
+		for (int i = 0; i < companyEmployeeWageArrayList.size(); i++) {
+		
+			CompanyEmployeeWage companyEmployeeWage = companyEmployeeWageArrayList.get(i);
+			companyEmployeeWage.setTotalEmpWage(this.calculateEmpWage(companyEmployeeWage));
+			System.out.println("Company Name :" + companyEmployeeWage.company);
+			displayDailyWageForCompany(companyEmployeeWage);
+			System.out.println(companyEmployeeWage.company + " Total Wage is " + companyEmployeeWage.totalWage);
 		}
 	}
 
-	public static class EmpBuilder implements IfComputeEmpWage {
-		static final int fullTime = 2;
-		static final int partTime = 1;
-		public ArrayList<CompWage> compempwagelist;
-		private int n = 0;
-
-		public EmpBuilder() {
-			compempwagelist = new ArrayList();
-
+	public void displayDailyWageForCompany(CompanyEmployeeWage companyEmployeeWage) {
+		for (int i = 0; i < companyEmployeeWage.empDailyWage.size(); i++) {
+			int day = i + 1;
+			System.out.println("Daily Wage For Day" + day + ":" + companyEmployeeWage.empDailyWage.get(i));
 		}
+	}
 
-		public void addEmployeeWage(String company, int empRatePerHour, int numWorkingDays, int maxHourPerMonth) {
-			CompWage c = new CompWage(company, empRatePerHour, numWorkingDays, maxHourPerMonth);
-			compempwagelist.add(c);
-		}
+	public int calculateEmpWage(CompanyEmployeeWage companyEmployeeWage) {
 
-		public void computeCompanyWage() {
-			for (int i = 0; i < compempwagelist.size(); i++) {
-				CompWage c1 = compempwagelist.get(i);
-				c1.setTotalWage(this.ComputeWage(c1));
-				System.out.println(c1.totalWage);
+		int empWage = 0;
+		int totalWorkingHours = 0;
+		int totalWorkingDays = 0;
+
+		while (totalWorkingDays < companyEmployeeWage.workingDay
+				&& totalWorkingHours < companyEmployeeWage.totalWorkHrs) {
+
+			Random random = new Random();
+			int empPresent = random.nextInt(3);
+			System.out.println("Random Value for Employee Attendance is :" + empPresent);
+
+			int x;
+			switch (empPresent) {
+
+			case EMP_FULL_TIME:
+
+				x = companyEmployeeWage.wagePerHour * 8;
+				empWage = empWage + x;
+				totalWorkingHours = totalWorkingHours + 8;
+				System.out.println("Employee is present and the wage is : " + empWage);
+				totalWorkingDays++;
+				break;
+
+			case EMP_PART_TIME:
+				x = companyEmployeeWage.wagePerHour * 4;
+				empWage = empWage + x;
+				totalWorkingHours = totalWorkingHours + 4;
+				System.out.println("Employee is Part time present and the wage is : " + empWage);
+				totalWorkingDays++;
+				break;
+
+			default:
+				System.out.println("Employee is absent and the wage is : " + empWage);
+				break;
+
 			}
+
 		}
 
-		public int ComputeWage(CompWage c) {
-			int employeehrs = 0;
-			int totalworkdays = 0;
-			int totalemphrs = 0;
-			// int totalwage=0;
+		System.out.println("Total Working Days :" + totalWorkingDays);
+		System.out.println("Total Working Hours :" + companyEmployeeWage.totalWorkHrs);
+		System.out.println("Total Employee Wage for company " + companyEmployeeWage.company + " is :" + empWage);
 
-			while (totalemphrs <= c.maxHourPerMonth && totalworkdays < c.numWorkingDays) {
-				totalworkdays++;
-				int empcheck = (int) Math.floor(Math.random() * 10) % 3;
-
-				switch (empcheck) {
-				case 1:
-					employeehrs = 4;
-					break;
-				case 2:
-					employeehrs = 8;
-					break;
-				default:
-					employeehrs = 0;
-				}
-				totalemphrs += employeehrs;
-				System.out.println("Emp hrs for day " + totalworkdays + " is: " + employeehrs);
-			}
-			return totalemphrs * c.empRatePerHour;
-		}
+		return empWage;
 	}
 
 	public static void main(String[] args) {
-		IfComputeEmpWage e = new EmpBuilder();
-		e.addEmployeeWage("D-Mart", 20, 20, 100);
-		e.addEmployeeWage("Amazon", 10, 10, 100);
-		e.computeCompanyWage();
+		System.out.println("Welcome to Employee Wage calculation");
+		EmployeeWage empWage = new EmployeeWage();
+		empWage.addCompanyEmpWage("BIG BASKET", 40, 22, 140);
+		empWage.addCompanyEmpWage("AMAZON", 90, 21, 222);
+		empWage.addCompanyEmpWage("WIPRO", 58, 22, 175);
+		empWage.calculateEmpWage();
+
+	}
+
+	@Override
+	public void calculateEmployeeWage() {
+		// TODO Auto-generated method stub
 
 	}
 
